@@ -153,6 +153,7 @@
         var currentPosition;
         var watchId;
         var lc;
+        var routeControl;
         const cors = 'https://cors-anywhere.herokuapp.com/'; // use cors-anywhere to fetch api data
         const url = 'https://iot.wra.gov.tw/uswg/stations?countyName=新北市'; // origin api url
         const pulsingIcon = L.icon.pulse({ iconSize: [9, 9], fillColor: '#7f3a9a', color: '#954db3' });
@@ -191,7 +192,15 @@
 
         function showPosition(e) {
             currentPosition = e.latlng;
-            console.log(e.latlng);
+
+            if (routeControl !== undefined) routeControl.clearLayer();
+
+            routeControl = L.Routing.control({
+                waypoints: [
+                    L.latLng(e.latlng.lat, e.latlng.lng),
+                    L.latLng(25.047549, 121.516211)
+                ]
+            }).addTo(map);
         }
 
         function groupClick(event) {
@@ -285,14 +294,6 @@
 
         function onMapClick(e) {
             console.log(e.latlng);
-
-            L.Routing.control({
-                waypoints: [
-                    L.latLng(e.latlng.lat, e.latlng.lng),
-                    L.latLng(currentPosition.lat, currentPosition.lng)
-                ]
-            }).addTo(map);
-
             var item;
             var url = 'https://maps.googleapis.com/maps/api/geocode/json?latlng=' + e.latlng.lat + ',' + e.latlng.lng + '&language=zh-TW&sensor=true&key=AIzaSyBil0b5_kNR3oR-i3V7xBUTdO3f3wVJFlc';
             //console.log(url);
