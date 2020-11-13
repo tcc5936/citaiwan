@@ -199,7 +199,10 @@
                 waypoints: [
                     L.latLng(e.latlng.lat, e.latlng.lng),
                     L.latLng(25.047549, 121.516211)
-                ]
+                ],
+                lineOptions: {
+                    styles: [{color: 'blue', opacity: 1, weight: 5}]
+                }
             }).addTo(map);
         }
 
