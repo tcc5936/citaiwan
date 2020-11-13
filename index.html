@@ -14,6 +14,7 @@
             integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
             crossorigin=""></script>
 
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.css" />
     <link rel="stylesheet" href="css/L.Icon.Pulse.css" />
     <script src="js/L.Icon.Pulse.js"></script>
     <link rel="stylesheet" href="css/leaflet.awesome-markers.css" />
@@ -146,6 +147,7 @@
     <script src="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol@0.72.0/dist/L.Control.Locate.min.js" charset="utf-8"></script>
     <script src="js/spin.min.js"></script>
     <script src="js/leaflet.spin.min.js"></script>
+    <script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
     <script>
         var cities;
         var currentPosition;
@@ -188,7 +190,7 @@
 
 
         function showPosition(e) {
-
+            currentPosition = e.latlng;
             console.log(e.latlng);
         }
 
@@ -282,6 +284,15 @@
         }
 
         function onMapClick(e) {
+            console.log(e.latlng);
+
+            L.Routing.control({
+                waypoints: [
+                    L.latLng(e.latlng.lat, e.latlng.lng),
+                    L.latLng(currentPosition.lat, currentPosition.lng)
+                ]
+            }).addTo(map);
+
             var item;
             var url = 'https://maps.googleapis.com/maps/api/geocode/json?latlng=' + e.latlng.lat + ',' + e.latlng.lng + '&language=zh-TW&sensor=true&key=AIzaSyBil0b5_kNR3oR-i3V7xBUTdO3f3wVJFlc';
             //console.log(url);
@@ -395,7 +406,7 @@
             }).addTo(map);
             cities = L.featureGroup().addTo(map).on("click", groupClick);
             map.on('click', onMapClick);
-            //map.on('locationfound', showPosition);
+            map.on('locationfound', showPosition);
             //map.locate({ setView: true, maxZoom: 13 });
 
             // add location control to global name space for testing only
