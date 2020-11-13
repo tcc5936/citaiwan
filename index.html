@@ -1,0 +1,437 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>淹水警示</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/1.5.2/css/ionicons.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+          integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+          crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+            integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+            crossorigin=""></script>
+
+    <link rel="stylesheet" href="css/L.Icon.Pulse.css" />
+    <script src="js/L.Icon.Pulse.js"></script>
+    <link rel="stylesheet" href="css/leaflet.awesome-markers.css" />
+    <script src="js/leaflet.awesome-markers.min.js"></script>
+    <script src="js/heatmap.min.js"></script>
+    <script src="js/leaflet-heatmap.js"></script>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol@0.72.0/dist/L.Control.Locate.min.css" />
+
+
+    <style type="text/css">
+        html, body {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        #menuPad {
+            width: 7%;
+        }
+
+        #map {
+            width: 70%;
+            height: 100vh;
+        }
+
+        #heatMap {
+            height: 540px;
+        }
+
+        #showPad {
+            width: 23%;
+        }
+
+        #menuPad, #showPad {
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .circle {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .red {
+            background-color: var(--red);
+        }
+
+        .green {
+            background-color: var(--green);
+        }
+
+        #menuPad li {
+            display: block;
+            list-style: none;
+            padding: 1rem;
+            text-align: center;
+            border-bottom: 1px solid var(--light);
+            cursor: pointer;
+            -webkit-transition: .3s;
+            -ms-transition: .3s;
+            -o-transition: .3s;
+            transition: .3s;
+        }
+
+            #menuPad li:hover, #menuPad li.active {
+                background-color: var(--gray);
+                color: #fff;
+            }
+
+        #showPad .pad {
+            border-radius: 1rem;
+            background-color: rgba(0, 0, 0, .6);
+            color: #fff;
+            margin: .5rem;
+            padding: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="d-flex justify-content-left">
+        <div id="menuPad" class="text-center">
+            <ul class="pl-0">
+                <li class="place active" data-place="新北市" data-centerlat="25.01351759274225" data-centerlng="121.46422617137434">新北市</li>
+                <li class="place" data-place="桃園市" data-centerlat="24.93759" data-centerlng="121.2168">桃園市</li>
+                <li class="place" data-place="臺中市" data-centerlat="24.115264852295518" data-centerlng="120.67616432905199">臺中市</li>
+                <li class="place" data-place="高雄市" data-centerlat="22.640471715830696" data-centerlng="120.32322853803636">高雄市</li>
+            </ul>
+        </div>
+        <div id="map"></div>
+        <div id="showPad">
+            <div class="pad" id="weather">
+                <h5 class="border-bottom pb-3" id="country"></h5>
+                <div class="pt-3" id="temp">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="text-left">
+                            <h6 id="wx"></h6>
+                            <h6 id="t"></h6>
+                        </div>
+                        <div class="text-right">
+                            <h6>降雨率</h6>
+                            <h6 id="pop"></h6>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pad" id="w-data">
+                <h6 class="border-bottom pb-3">淹水資訊</h6>
+                <div class="pt-3">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="circle mb-0 mr-2 green" id="light"></div>
+                        <h6 class="mb-0" id=state>---</h6>
+                    </div>
+                    <h6 id="water">淹水：0 cm</h6>
+                    <p class="font-12 mb-0" id="address">---</p>
+                </div>
+            </div>
+            <div class="pad" id="rainMap">
+                <div id="heatMap"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol@0.72.0/dist/L.Control.Locate.min.js" charset="utf-8"></script>
+    <script>
+        var cities;
+        var currentPosition;
+        var watchId;
+        var lc;
+        const cors = 'https://cors-anywhere.herokuapp.com/'; // use cors-anywhere to fetch api data
+        const url = 'https://iot.wra.gov.tw/uswg/stations?countyName=新北市'; // origin api url
+        const pulsingIcon = L.icon.pulse({ iconSize: [9, 9], fillColor: '#7f3a9a', color: '#954db3' });
+        const place = document.getElementsByClassName('place');
+        const state = document.getElementById('state');
+        const water = document.getElementById('water');
+        const address = document.getElementById('address');
+        const light = document.getElementById('light');
+        const map = L.map('map');
+        var heatMap;
+        var heatmapLayer;
+
+        //產生min到max之間的亂數
+        function getRandom(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        };
+
+        // 天氣
+        const weatherURL = 'https://opendata.cwb.gov.tw/api/v1/rest/datastore/F-C0032-001?Authorization=CWB-B827E2D3-6A71-420C-9029-F9F6B0837F1D&format=JSON&locationName=臺北市&elementName=';
+        axios.get(weatherURL)
+            .then(function (res) {
+                document.getElementById('country').innerText = res.data.records.location[0].locationName;
+
+                document.getElementById('wx').innerText = res.data.records.location[0].weatherElement[0].time[0].parameter.parameterName;
+
+                document.getElementById('t').innerText = res.data.records.location[0].weatherElement[2].time[0].parameter.parameterName + '-' + res.data.records.location[0].weatherElement[4].time[0].parameter.parameterName + '℃';
+
+                document.getElementById('pop').innerText = res.data.records.location[0].weatherElement[1].time[0].parameter.parameterName + '%';
+
+            })
+            .catch(function (error) {
+                //handler error
+                console.log(error);
+            });
+
+
+        function showPosition(e) {
+
+            if (currentPosition !== undefined) {
+                map.removeLayer(currentPosition);
+            }
+
+            currentPosition = L.marker(e.latlng, { icon: pulsingIcon }).addTo(map)
+                .bindPopup('現在位置')
+                .openPopup();
+        }
+
+        function groupClick(event) {
+            state.innerText = event.layer.item.Name;
+            water.innerText = '淹水：' + event.layer.item.Measurements[0].Value + ' cm';
+            address.innerText = event.layer.item.CountyName + event.layer.item.TownName + event.layer.item.Name;
+            if (event.layer.item.Measurements[0].Value === 0) {
+                $('#light').addClass('green').removeClass('red');
+            } else {
+                $('#light').addClass('red').removeClass('green');
+            }
+        }
+
+        function createMarker(item) {
+            var contentString = '';
+            var marker;
+            if (item.Measurements[0].Value === 0) {
+                marker = L.marker([item.Latitude, item.Longtiude], { icon: L.AwesomeMarkers.icon({ icon: 'ios7-analytics-outline', markerColor: 'green', prefix: 'ion', spin: false }) }).addTo(cities);
+                contentString = '<div class="circle mb-2 green"></div><h6>' + item.Name + '</h6><h6>淹水：' + item.Measurements[0].Value + ' cm</h6><p class="mb-0">' + item.CountyName + item.TownName + item.Name + '</p>';
+
+            } else {
+                marker = L.marker([item.Latitude, item.Longtiude], { icon: L.AwesomeMarkers.icon({ icon: 'ion-alert', markerColor: 'red', prefix: 'ion', spin: false }) }).addTo(cities);
+                contentString = '<div class="circle mb-2 red"></div><h6>' + item.Name + '</h6><h6>淹水：' + item.Measurements[0].Value + ' cm</h6><p class="mb-0">' + item.CountyName + item.TownName + item.Name + '</p>';
+
+            }
+            marker.bindPopup(contentString);
+            marker.item = item;
+        }
+
+        function changeMaker() {
+            $(this).addClass('active').siblings().removeClass('active');
+            if ($(this).data('centerlat') !== undefined) map.setView([$(this).data('centerlat'), $(this).data('centerlng')]);
+            var url = 'https://cors-anywhere.herokuapp.com/https://iot.wra.gov.tw/uswg/stations?countyName=';
+            if ($(this).data('place') === undefined) {
+                url = url + '新北市';
+            } else {
+                url = url + $(this).data('place');
+            }
+
+            axios.get(url, {
+                headers: {
+                    'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6InRjYzU5MzYiLCJyb2xlIjoiVXNlciIsIm5iZiI6MTYwNDkwNzEwMSwiZXhwIjoxNjA0OTA4OTAxLCJpYXQiOjE2MDQ5MDcxMDEsImlzcyI6Ikh5ZHJvbG9neS5PQXV0aDIiLCJhdWQiOiJIeWRyb2xvZ3kuT3BlbkRhdGFBcGkifQ.Bh1TcJEXMu7F4LTP_zxawHTFAN2AxEGBOhjpestNsLk',
+                    'Access-Control-Allow-Origin': '*',
+                    "X-Requested-With": "XMLHttpRequest"
+                }
+            })
+                .then((res) => {
+                    if (res.data.length) {
+
+
+                        if (cities !== undefined) {
+                            cities.clearLayers();
+                        }
+                        $.each(res.data,
+                            function (i, item) {
+                                createMarker(item);
+                            });
+                        cities.addTo(map);
+
+                    }
+
+                })
+                .catch((error) => {
+                    console.error(error);
+                });
+        }
+
+        function getItem(lat, lng) {
+            var item;
+            var url = 'https://maps.googleapis.com/maps/api/geocode/json?latlng=' + lat + ',' + lng + '&language=zh-TW&sensor=true&key=AIzaSyBil0b5_kNR3oR-i3V7xBUTdO3f3wVJFlc';
+            //console.log(url);
+            fetch(url)
+                .then(res => res.json())
+                .then(res => {
+                    if (res.results.length) {
+                        //console.log(res.results[0].address_components[3].short_name);
+                        item = JSON.parse('{"Name":"' + res.results[0].formatted_address + '","TownName":"' + res.results[0].address_components[2].short_name + '","CountyName":"' + res.results[0].address_components[3].short_name + '","Latitude":' + lat + ',"Longtiude":' + lng + ',"Measurements":[{"Value":5}]}');
+
+                    } else {
+                        return null;
+                    }
+
+                });
+
+            return item;
+
+        }
+
+        function onMapClick(e) {
+            var item;
+            var url = 'https://maps.googleapis.com/maps/api/geocode/json?latlng=' + e.latlng.lat + ',' + e.latlng.lng + '&language=zh-TW&sensor=true&key=AIzaSyBil0b5_kNR3oR-i3V7xBUTdO3f3wVJFlc';
+            //console.log(url);
+            fetch(url)
+                .then(res => res.json())
+                .then(res => {
+                    if (res.results.length) {
+                        item = JSON.parse('{"Name":"' + res.results[0].address_components[1].short_name + res.results[0].address_components[0].short_name + '號","TownName":"' + res.results[0].address_components[2].short_name + '","CountyName":"' + res.results[0].address_components[3].short_name + '","Latitude":' + e.latlng.lat + ',"Longtiude":' + e.latlng.lng + ',"Measurements":[{"Value":' + getRandom(5, 30) + '}]}');
+                        //console.log(item);
+                        createMarker(item);
+                    }
+
+                });
+        }
+
+        var t = 1;
+        function initHeatMap() {
+
+            var baseLayer = L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoidGNjNTkzNiIsImEiOiJja2g2M2RwNmQwNDh4MnhzN2N0czV4b2pkIn0.GHlbm7TdChWv6cG6PCOGxQ', {
+                attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+                maxZoom: 20,
+                id: 'mapbox/streets-v11',
+                tileSize: 512,
+                zoomOffset: -1,
+                detectRetina: true,
+                accessToken: 'pk.eyJ1IjoidGNjNTkzNiIsImEiOiJja2g2M2RwNmQwNDh4MnhzN2N0czV4b2pkIn0.GHlbm7TdChWv6cG6PCOGxQ'
+            });
+            var cfg = {
+                // radius should be small ONLY if scaleRadius is true (or small radius is intended)
+                // if scaleRadius is false it will be the constant radius used in pixels
+                "radius": 0.1,
+                "maxOpacity": .5,
+                // scales the radius based on map zoom
+                "scaleRadius": true,
+                // if set to false the heatmap uses the global maximum for colorization
+                // if activated: uses the data maximum within the current map boundaries
+                //   (there will always be a red spot with useLocalExtremas true)
+                "useLocalExtrema": true,
+                // which field name in your data represents the latitude - default "lat"
+                latField: 'lat',
+                // which field name in your data represents the longitude - default "lng"
+                lngField: 'lng',
+                // which field name in your data represents the data value - default "value"
+                valueField: 'count'
+            };
+
+            heatmapLayer = new HeatmapOverlay(cfg);
+
+            heatMap = new L.map('heatMap',
+                {
+                    center: new L.LatLng(23.717118, 120.9967659),
+                    zoomControl: false,
+                    zoom: 7,
+                    layers: [baseLayer, heatmapLayer]
+                });
+
+            loadHeatData();
+        }
+        function loadHeatData() {
+            fetch('https://opendata.cwb.gov.tw/fileapi/v1/opendataapi/O-A0002-001?Authorization=CWB-1359EBB5-1818-43F2-B682-AFE324C1886B&format=JSON&elementName=HOUR_12')
+                .then(res => res.json())
+                .then(res => {
+                    var features = res.cwbopendata.location;
+                    //放 heat map 的資料陣列
+                    var heatMapData = [];
+
+                    Array.prototype.forEach.call(features,
+                        f => {
+                            var weight = () => {
+
+                                // 1：60分钟。2：10分钟。3：3小时。4：6小时。5：12小时。6：24小时。7：今天。8：2天内。9：3天内。
+                                var w = Number(f.weatherElement[t].elementValue.value.split('.')[0]);
+
+                                if (w < 0) { return 0 }
+                                else { return w }
+                            }
+
+                            var rainData = {
+                                lat: f.lat,
+                                lng: f.lon,
+                                count: weight()
+                            }
+
+                            heatMapData.push(rainData);
+                        });
+
+                    var testData = {
+                        max: 100,
+                        min: 0,
+                        data: heatMapData
+                    }
+                    heatmapLayer.setData(testData);
+
+                    t = t + 1;
+                    if (t > 9) t = 1;
+                });
+        }
+
+        $(document).ready(function () {
+
+            map.fitWorld();
+            L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoidGNjNTkzNiIsImEiOiJja2g2M2RwNmQwNDh4MnhzN2N0czV4b2pkIn0.GHlbm7TdChWv6cG6PCOGxQ', {
+                attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+                minZoom: 3,
+                maxZoom: 20,
+                id: 'mapbox/streets-v11',
+                tileSize: 512,
+                zoomOffset: -1,
+                detectRetina: true,
+                accessToken: 'pk.eyJ1IjoidGNjNTkzNiIsImEiOiJja2g2M2RwNmQwNDh4MnhzN2N0czV4b2pkIn0.GHlbm7TdChWv6cG6PCOGxQ'
+            }).addTo(map);
+            cities = L.featureGroup().addTo(map).on("click", groupClick);
+            map.on('click', onMapClick);
+            //map.on('locationfound', showPosition);
+            //map.locate({ setView: true, maxZoom: 13 });
+
+            // add location control to global name space for testing only
+            // on a production site, omit the "lc = "!
+            lc = L.control.locate({
+                strings: {
+                    title: "你的位置"
+                },
+                locateOptions: {
+                    enableHighAccuracy: true,
+                    maxZoom: 13
+                }
+            }).addTo(map);
+            lc.start();
+            //if (navigator.geolocation) {
+            //    watchId = navigator.geolocation.watchPosition(showPosition);
+            //} else {
+            //    alert("Geolocation is not supported by this browser.");
+            //}
+
+            for (var j = 0; j < place.length; j++) {
+                place[j].addEventListener('click', changeMaker);
+            }
+
+            changeMaker();
+        });
+
+        window.onload = function () {
+            initHeatMap();
+        }
+
+        setInterval(loadHeatData, 3000);
+
+    </script>
+
+
+</body>
+</html>
