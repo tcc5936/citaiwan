@@ -22,7 +22,7 @@
     <script src="js/leaflet-heatmap.js"></script>
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol@0.72.0/dist/L.Control.Locate.min.css" />
-
+    <link href="css/spin.css" rel="stylesheet">
 
     <style type="text/css">
         html, body {
@@ -144,6 +144,8 @@
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
     <script src="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol@0.72.0/dist/L.Control.Locate.min.js" charset="utf-8"></script>
+    <script src="js/spin.min.js"></script>
+    <script src="js/leaflet.spin.min.js"></script>
     <script>
         var cities;
         var currentPosition;
@@ -226,7 +228,7 @@
             } else {
                 url = url + $(this).data('place');
             }
-
+            map.spin(true);
             axios.get(url, {
                 headers: {
                     'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6InRjYzU5MzYiLCJyb2xlIjoiVXNlciIsIm5iZiI6MTYwNDkwNzEwMSwiZXhwIjoxNjA0OTA4OTAxLCJpYXQiOjE2MDQ5MDcxMDEsImlzcyI6Ikh5ZHJvbG9neS5PQXV0aDIiLCJhdWQiOiJIeWRyb2xvZ3kuT3BlbkRhdGFBcGkifQ.Bh1TcJEXMu7F4LTP_zxawHTFAN2AxEGBOhjpestNsLk',
@@ -252,6 +254,9 @@
                 })
                 .catch((error) => {
                     console.error(error);
+                })
+                .then(function () {
+                    map.spin(false);
                 });
         }
 
@@ -390,7 +395,7 @@
             }).addTo(map);
             cities = L.featureGroup().addTo(map).on("click", groupClick);
             map.on('click', onMapClick);
-            map.on('locationfound', showPosition);
+            //map.on('locationfound', showPosition);
             //map.locate({ setView: true, maxZoom: 13 });
 
             // add location control to global name space for testing only
