@@ -396,7 +396,7 @@
             }).addTo(map);
             cities = L.featureGroup().addTo(map).on("click", groupClick);
             map.on('click', onMapClick);
-            map.on('locationfound', showPosition);
+            //map.on('locationfound', showPosition);
             //map.locate({ setView: true, maxZoom: 13 });
 
             // add location control to global name space for testing only
@@ -407,7 +407,8 @@
                 },
                 locateOptions: {
                     enableHighAccuracy: true,
-                    maxZoom: 13
+                    maxZoom: 13,
+                    setView: true
                 }
             }).addTo(map);
             lc.start();
