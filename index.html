@@ -44,7 +44,7 @@
 
         #heatMap {
             width: 100%;
-            height: 100vh;
+            height: 540px;
         }
 
         #showPad {
@@ -202,7 +202,7 @@
                     L.latLng(25.047549, 121.516211)
                 ],
                 lineOptions: {
-                    styles: [{color: 'blue', opacity: 1, weight: 5}]
+                    styles: [{ color: 'blue', opacity: 1, weight: 5 }]
                 }
             }).addTo(map);
         }
@@ -438,6 +438,7 @@
 
         window.onload = function () {
             initHeatMap();
+
         }
 
         setInterval(loadHeatData, 3000);
