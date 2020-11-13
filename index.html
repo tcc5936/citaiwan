@@ -148,6 +148,7 @@
     <script src="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol@0.72.0/dist/L.Control.Locate.min.js" charset="utf-8"></script>
     <script src="js/spin.min.js"></script>
     <script src="js/leaflet.spin.min.js"></script>
+    <script src="js/Leaflet.Control.Custom.js"></script>
     <script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
     <script>
         var cities;
@@ -354,9 +355,57 @@
                     layers: [baseLayer, heatmapLayer]
                 });
 
+            L.control.custom({
+                position: 'topright',
+                content: '<div class="pad text-center">' +
+                '            <h6" id="test">淹水資訊</h6>' +
+                    '</div>',
+                classes: 'panel panel-default',
+                style:
+                {
+                    width: '120px',
+                    margin: '0px',
+                    padding: '0px',
+                },
+            })
+                .addTo(heatMap);
+
             loadHeatData();
         }
         function loadHeatData() {
+
+            switch (t) {
+                case 1:
+                    $("#test").text("60分鐘雨量");
+                    break;
+                case 2:
+                    $("#test").text("10分鐘雨量");
+                    break;
+                case 3:
+                    $("#test").text("3小時雨量");
+                    break;
+                case 4:
+                    $("#test").text("6小時雨量");
+                    break;
+                case 5:
+                    $("#test").text("12小時雨量");
+                    break;
+                case 6:
+                    $("#test").text("24小時雨量");
+                    break;
+                case 7:
+                    $("#test").text("今天雨量");
+                    break;
+                case 8:
+                    $("#test").text("2天內雨量");
+                    break;
+                case 9:
+                    $("#test").text("3天內雨量");
+                    break;
+                default:
+                    $("#test").text("");
+            }
+
             fetch('https://opendata.cwb.gov.tw/fileapi/v1/opendataapi/O-A0002-001?Authorization=CWB-1359EBB5-1818-43F2-B682-AFE324C1886B&format=JSON&elementName=HOUR_12')
                 .then(res => res.json())
                 .then(res => {
