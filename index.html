@@ -424,7 +424,7 @@
                             var weight = () => {
 
                                 // 1：60分钟。2：10分钟。3：3小时。4：6小时。5：12小时。6：24小时。7：今天。8：2天内。9：3天内。
-                                var w = Number(f.weatherElement[tdata[t]].elementValue.value.split('.')[0]);
+                                var w = Number(f.weatherElement[tdata[t-1]].elementValue.value.split('.')[0]);
 
                                 if (w < 0) { return 0 }
                                 else { return w }
