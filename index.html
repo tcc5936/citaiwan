@@ -318,6 +318,9 @@
         }
 
         var t = 1;
+        // 1：60分钟。2：10分钟。3：3小时。4：6小时。5：12小时。6：24小时。7：今天。8：2天内。9：3天内。
+        var tdata = [2, 1, 3, 4, 5, 6, 7, 8, 9];
+
         function initHeatMap() {
 
             var baseLayer = L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoidGNjNTkzNiIsImEiOiJja2g2M2RwNmQwNDh4MnhzN2N0czV4b2pkIn0.GHlbm7TdChWv6cG6PCOGxQ', {
@@ -361,7 +364,7 @@
             L.control.custom({
                 position: 'topright',
                 content: '<div class="pad text-center">' +
-                '            <h6" id="test">淹水資訊</h6>' +
+                    '            <h6" id="test">淹水資訊</h6>' +
                     '</div>',
                 classes: 'panel panel-default',
                 style:
@@ -379,10 +382,10 @@
 
             switch (t) {
                 case 1:
-                    $("#test").text("60分鐘雨量");
+                    $("#test").text("10分鐘雨量");
                     break;
                 case 2:
-                    $("#test").text("10分鐘雨量");
+                    $("#test").text("60分鐘雨量");
                     break;
                 case 3:
                     $("#test").text("3小時雨量");
@@ -421,7 +424,7 @@
                             var weight = () => {
 
                                 // 1：60分钟。2：10分钟。3：3小时。4：6小时。5：12小时。6：24小时。7：今天。8：2天内。9：3天内。
-                                var w = Number(f.weatherElement[t].elementValue.value.split('.')[0]);
+                                var w = Number(f.weatherElement[tdata[t]].elementValue.value.split('.')[0]);
 
                                 if (w < 0) { return 0 }
                                 else { return w }
