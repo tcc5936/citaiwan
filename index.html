@@ -418,7 +418,7 @@
                     $("#test").text("");
             }
 
-            fetch('https://opendata.cwb.gov.tw/fileapi/v1/opendataapi/O-A0002-001?Authorization=CWB-1359EBB5-1818-43F2-B682-AFE324C1886B&format=JSON&elementName=HOUR_12')
+            fetch('https://opendata.cwb.gov.tw/fileapi/v1/opendataapi/O-A0002-001?Authorization=CWB-1359EBB5-1818-43F2-B682-AFE324C1886B&format=JSON&elementName=')
                 .then(res => res.json())
                 .then(res => {
                     var features = res.cwbopendata.location;
