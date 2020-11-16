@@ -26,7 +26,6 @@
     <link href="css/spin.css" rel="stylesheet">
     <link href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css" rel="stylesheet">
     <link href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css" rel="stylesheet">
-    <link rel="stylesheet" href="css/leaflet-logo.min.css" />
 
     <style type="text/css">
         html, body {
@@ -154,7 +153,6 @@
     <script src="js/Leaflet.Control.Custom.js"></script>
     <script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
     <script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js"></script>
-    <script src="js/leaflet-logo.min.js" charset="utf-8"></script>
     <script>
         var cities;
         var currentPosition;
@@ -475,11 +473,26 @@
             map.on('locationfound', showPosition);
             //map.locate({ setView: true, maxZoom: 13 });
 
-            var logo = L.control.logo({
-                position: 'bottomleft',
-                link: '#',
-                image: 'https://avatars3.githubusercontent.com/u/7146753?v=3&s=100'
-            }).addTo(map);
+            L.Control.Watermark = L.Control.extend({
+                onAdd: function (map) {
+                    var img = L.DomUtil.create('img');
+
+                    img.src = 'https://tcc5936.github.io/citaiwan/images/logo.png';
+                    img.style.width = '200px';
+
+                    return img;
+                },
+
+                onRemove: function (map) {
+                    // Nothing to do here
+                }
+            });
+
+            L.control.watermark = function (opts) {
+                return new L.Control.Watermark(opts);
+            }
+
+            L.control.watermark({ position: 'bottomleft' }).addTo(map);
 
             // add location control to global name space for testing only
             // on a production site, omit the "lc = "!
