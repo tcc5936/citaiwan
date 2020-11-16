@@ -260,10 +260,14 @@
                 .then((res) => {
                     if (res.data.length) {
 
-
                         if (cities !== undefined) {
                             cities.clearLayers();
                         }
+                        marker = L.marker([25.032594, 121.571022], { icon: L.AwesomeMarkers.icon({ icon: 'ion-home', markerColor: 'blue', prefix: 'ion', spin: false }) }).addTo(cities);
+                        contentString = '<div class="circle mb-2 green"></div><h6>信義區信義路五段涵洞</h6><h6>淹水：0 cm</h6><p class="mb-0">台北市信義區信義路五段涵洞</p>';
+                        marker.bindPopup(contentString);
+                        item = JSON.parse('{"Name":"信義區信義路五段涵洞","TownName":"信義區","CountyName":"台北市","Latitude":25.032594,"Longtiude":121.571022,"Measurements":[{"Value":0}]}');
+                        marker.item = item;
                         $.each(res.data,
                             function (i, item) {
                                 createMarker(item);
@@ -506,11 +510,13 @@
                 }
             }).addTo(map);
 
-            lc.start();
+            lc.start();         
 
             for (var j = 0; j < place.length; j++) {
                 place[j].addEventListener('click', changeMaker);
             }
+
+
 
             changeMaker();
         });
