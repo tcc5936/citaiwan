@@ -323,7 +323,7 @@
                 });
         }
 
-        var t = 1;
+        var t = 0;
         // 1：60分钟。2：10分钟。3：3小时。4：6小时。5：12小时。6：24小时。7：今天。8：2天内。9：3天内。
         var tdata = [2, 1, 3, 4, 5, 6, 7, 8, 9];
 
@@ -348,7 +348,7 @@
                 // if set to false the heatmap uses the global maximum for colorization
                 // if activated: uses the data maximum within the current map boundaries
                 //   (there will always be a red spot with useLocalExtremas true)
-                "useLocalExtrema": true,
+                "useLocalExtrema": false,
                 // which field name in your data represents the latitude - default "lat"
                 latField: 'lat',
                 // which field name in your data represents the longitude - default "lng"
@@ -370,49 +370,48 @@
             L.control.custom({
                 position: 'topright',
                 content: '<div class="pad text-center">' +
-                    '            <h6" id="test">淹水資訊</h6>' +
+                    '            <h6" id="test">雨量觀測</h6>' +
                     '</div>',
                 classes: 'panel panel-default',
                 style:
                 {
-                    width: '120px',
+                    width: '135px',
                     margin: '0px',
                     padding: '0px',
                 },
             })
                 .addTo(heatMap);
 
-            loadHeatData();
         }
         function loadHeatData() {
 
             switch (t) {
+                case 0:
+                    $("#test").text("10分鐘雨量觀測");
+                    break;
                 case 1:
-                    $("#test").text("10分鐘雨量");
+                    $("#test").text("60分鐘雨量觀測");
                     break;
                 case 2:
-                    $("#test").text("60分鐘雨量");
+                    $("#test").text("3小時雨量觀測");
                     break;
                 case 3:
-                    $("#test").text("3小時雨量");
+                    $("#test").text("6小時雨量觀測");
                     break;
                 case 4:
-                    $("#test").text("6小時雨量");
+                    $("#test").text("12小時雨量觀測");
                     break;
                 case 5:
-                    $("#test").text("12小時雨量");
+                    $("#test").text("24小時雨量觀測");
                     break;
                 case 6:
-                    $("#test").text("24小時雨量");
+                    $("#test").text("今天雨量觀測");
                     break;
                 case 7:
-                    $("#test").text("今天雨量");
+                    $("#test").text("2天內雨量觀測");
                     break;
                 case 8:
-                    $("#test").text("2天內雨量");
-                    break;
-                case 9:
-                    $("#test").text("3天內雨量");
+                    $("#test").text("3天內雨量觀測");
                     break;
                 default:
                     $("#test").text("");
@@ -427,21 +426,21 @@
 
                     Array.prototype.forEach.call(features,
                         f => {
+                            
                             var weight = () => {
 
                                 // 1：60分钟。2：10分钟。3：3小时。4：6小时。5：12小时。6：24小时。7：今天。8：2天内。9：3天内。
-                                var w = Number(f.weatherElement[tdata[t - 1]].elementValue.value.split('.')[0]);
+                                var w = Number(f.weatherElement[tdata[t]].elementValue.value);
 
                                 if (w < 0) { return 0 }
                                 else { return w }
                             }
-
+                            
                             var rainData = {
                                 lat: f.lat,
                                 lng: f.lon,
                                 count: weight()
                             }
-
                             heatMapData.push(rainData);
                         });
 
@@ -452,8 +451,8 @@
                     }
                     heatmapLayer.setData(testData);
 
-                    t = t + 1;
-                    if (t > 9) t = 1;
+                    t = ++t;
+                    if (t > 8) t = 1;
                 });
         }
 
@@ -510,7 +509,7 @@
                 }
             }).addTo(map);
 
-            lc.start();         
+            lc.start();
 
             for (var j = 0; j < place.length; j++) {
                 place[j].addEventListener('click', changeMaker);
