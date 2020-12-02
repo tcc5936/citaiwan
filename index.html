@@ -143,7 +143,7 @@
             <div class="pad" id="w-simulater">
                 <div class="form-check">
                     <label class="form-check-label">
-                        <input type="checkbox" class="form-check-input" value="" id="simulatorOn">模擬淹水感測器
+                        <input type="checkbox" class="form-check-input" value="" id="simulatorOn">設定淹水感測器
                     </label>
                 </div>
             </div>
@@ -314,7 +314,10 @@
         }
 
         function onMapClick(e) {
-            if (!$("#simulatorOn").prop("checked")) return false;
+            if (!$("#simulatorOn").prop("checked")) {
+                e.preventDefault();
+                return false;
+            }
             var item;
             var url = 'https://maps.googleapis.com/maps/api/geocode/json?latlng=' + e.latlng.lat + ',' + e.latlng.lng + '&language=zh-TW&sensor=true&key=AIzaSyBil0b5_kNR3oR-i3V7xBUTdO3f3wVJFlc';
             //console.log(url);
