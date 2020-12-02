@@ -317,9 +317,18 @@
             if (!$("#simulatorOn").prop("checked")) {
                 return false;
             }
+            var marker = e.target,
+                CLICK_TOLERANCE = 400,
+                timeDifference;
+
+            timeDifference = e.originalEvent.timeStamp - marker.lastClickTimestamp;
+
+            if (timeDifference < CLICK_TOLERANCE) {
+                return false;
+            }
+
             var item;
             var url = 'https://maps.googleapis.com/maps/api/geocode/json?latlng=' + e.latlng.lat + ',' + e.latlng.lng + '&language=zh-TW&sensor=true&key=AIzaSyBil0b5_kNR3oR-i3V7xBUTdO3f3wVJFlc';
-            alert('hi');
             fetch(url)
                 .then(res => res.json())
                 .then(res => {
@@ -435,7 +444,7 @@
 
                     Array.prototype.forEach.call(features,
                         f => {
-                            
+
                             var weight = () => {
 
                                 // 1：60分钟。2：10分钟。3：3小时。4：6小时。5：12小时。6：24小时。7：今天。8：2天内。9：3天内。
@@ -444,7 +453,7 @@
                                 if (w < 0) { return 0 }
                                 else { return w }
                             }
-                            
+
                             var rainData = {
                                 lat: f.lat,
                                 lng: f.lon,
