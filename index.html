@@ -318,10 +318,8 @@
                 return false;
             }
         
-            console.log('Click-Event on map / Time: ' + Date.now());
-
             var item;
-            var url = 'https://maps.googleapis.com/maps/api/geocode/json?latlng=' + e.latlng.lat + ',' + e.latlng.lng + '&language=zh-TW&sensor=true&key=AIzaSyBil0b5_kNR3oR-i3V7xBUTdO3f3wVJFlc';
+            const url = 'https://maps.googleapis.com/maps/api/geocode/json?latlng=' + e.latlng.lat + ',' + e.latlng.lng + '&language=zh-TW&sensor=true&key=AIzaSyBil0b5_kNR3oR-i3V7xBUTdO3f3wVJFlc';
             fetch(url)
                 .then(res => res.json())
                 .then(res => {
