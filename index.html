@@ -317,19 +317,27 @@
             if (!$("#simulatorOn").prop("checked")) {
                 return false;
             }
-        
-            var item;
-            const url = 'https://maps.googleapis.com/maps/api/geocode/json?latlng=' + e.latlng.lat + ',' + e.latlng.lng + '&language=zh-TW&sensor=true&key=AIzaSyBil0b5_kNR3oR-i3V7xBUTdO3f3wVJFlc';
-            fetch(url)
-                .then(res => res.json())
-                .then(res => {
-                    if (res.results.length) {
-                        item = JSON.parse('{"Name":"' + res.results[0].address_components[1].short_name + res.results[0].address_components[0].short_name + '號","TownName":"' + res.results[0].address_components[2].short_name + '","CountyName":"' + res.results[0].address_components[3].short_name + '","Latitude":' + e.latlng.lat + ',"Longtiude":' + e.latlng.lng + ',"Measurements":[{"Value":' + getRandom(5, 30) + '}]}');
-                        //console.log(item);
-                        createMarker(item);
-                    }
 
-                });
+            map.clicked = map.clicked + 1;
+            setTimeout(function () {
+                if (map.clicked === 1) {
+                    var item;
+                    const url = 'https://maps.googleapis.com/maps/api/geocode/json?latlng=' + e.latlng.lat + ',' + e.latlng.lng + '&language=zh-TW&sensor=true&key=AIzaSyBil0b5_kNR3oR-i3V7xBUTdO3f3wVJFlc';
+                    fetch(url)
+                        .then(res => res.json())
+                        .then(res => {
+                            if (res.results.length) {
+                                item = JSON.parse('{"Name":"' + res.results[0].address_components[1].short_name + res.results[0].address_components[0].short_name + '號","TownName":"' + res.results[0].address_components[2].short_name + '","CountyName":"' + res.results[0].address_components[3].short_name + '","Latitude":' + e.latlng.lat + ',"Longtiude":' + e.latlng.lng + ',"Measurements":[{"Value":' + getRandom(5, 30) + '}]}');
+                                //console.log(item);
+                                createMarker(item);
+                            }
+
+                        });
+
+                    map.clicked = 0;
+                }
+            }, 300);
+
         }
 
         var t = 0;
@@ -478,6 +486,9 @@
                 detectRetina: true,
                 accessToken: 'pk.eyJ1IjoidGNjNTkzNiIsImEiOiJja2g2M2RwNmQwNDh4MnhzN2N0czV4b2pkIn0.GHlbm7TdChWv6cG6PCOGxQ'
             }).addTo(map);
+
+            map.clicked = 0;
+
             //cities = L.featureGroup().addTo(map).on("click", groupClick);
             cities = L.markerClusterGroup().addTo(map).on("click", groupClick);
 
