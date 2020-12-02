@@ -320,7 +320,7 @@
 
             map.clicked = map.clicked + 1;
             setTimeout(function () {
-                if (map.clicked === 1) {
+                if (map.clicked !==0) {
                     var item;
                     const url = 'https://maps.googleapis.com/maps/api/geocode/json?latlng=' + e.latlng.lat + ',' + e.latlng.lng + '&language=zh-TW&sensor=true&key=AIzaSyBil0b5_kNR3oR-i3V7xBUTdO3f3wVJFlc';
                     fetch(url)
@@ -336,7 +336,7 @@
 
                     map.clicked = 0;
                 }
-            }, 300);
+            }, 100);
 
         }
 
