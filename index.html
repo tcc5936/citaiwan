@@ -317,6 +317,14 @@
             if (!$("#simulatorOn").prop("checked")) {
                 return false;
             }
+
+            map.clicked = map.clicked + 1;
+
+            if (map.clicked > 1) {
+                map.clicked = 0;
+                return false;
+            }
+
             var item;
             const url = 'https://maps.googleapis.com/maps/api/geocode/json?latlng=' + e.latlng.lat + ',' + e.latlng.lng + '&language=zh-TW&sensor=true&key=AIzaSyBil0b5_kNR3oR-i3V7xBUTdO3f3wVJFlc';
             fetch(url)
@@ -478,6 +486,7 @@
                 accessToken: 'pk.eyJ1IjoidGNjNTkzNiIsImEiOiJja2g2M2RwNmQwNDh4MnhzN2N0czV4b2pkIn0.GHlbm7TdChWv6cG6PCOGxQ'
             }).addTo(map);
 
+            map.clicked = 0;
 
             //cities = L.featureGroup().addTo(map).on("click", groupClick);
             cities = L.markerClusterGroup().addTo(map).on("click", groupClick);
